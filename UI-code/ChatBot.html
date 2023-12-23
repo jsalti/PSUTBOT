@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>PSUTBOT</title>
+    <link rel="stylesheet" href="ChatBot.css">
+ 
+</head>
+<body>
+
+    <div id="chatbox">
+      <div class="title-container">
+        <img src='assets/uni_logo.png' class='uni-logo'  />
+        <h2> PSUTBOT</h2>
+      </div>
+        <div id="chatlog">
+            <div class="message-container bot-message-container">
+                <img src='assets/bot_logo.png' class='bot-logo' />
+                <div class="message-text bot-message">Hello! How can I assist you today?</div>
+            </div>
+        </div>
+        <div id="inputAndButtons">
+          <input type="text" id="userInput" placeholder="Type your message...">
+          <div id="buttons">
+            <button id="sendButton" class="send-button action-button"></button>
+            <button id="micButton" class="voice-button action-button"></button>
+          </div>
+      </div>
+    </div>
+
+    <script src="ChatBot.js"></script>
+
+</body>
+</html>
