@@ -63,7 +63,7 @@ url_master_programs = "https://psut.edu.jo/en/school/School_of_Graduate_Studies_
 master_programs_data = scrape_master_programs_info(url_master_programs)
 
 # Specify the directory where you have write permissions
-output_directory = '/tmp/output_school'
+output_directory = '/tmp/output_masters'
 
 # Ensure the directory exists
 os.makedirs(output_directory, exist_ok=True)
