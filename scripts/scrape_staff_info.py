@@ -7,21 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/1sLgOqa5IPYMAsYBqOGPWx6ljzmo0xlcK
 """
 
-import os
 import requests
-import fitz  # PyMuPDF
 import json
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import chromedriver_autoinstaller
-import time
-import json
-
-import requests
 from bs4 import BeautifulSoup
+import os
 import pandas as pd
 
 def get_total_pages(base_url):
@@ -37,15 +26,11 @@ def get_total_pages(base_url):
     return total_pages
 
 def extract_staff_info(url):
-    response = requests.get(url)
-
-    if response.status_code != 200:
-        print(f"Failed to retrieve content from {url}")
-        return None
-
-    soup = BeautifulSoup(response.text, 'html.parser')
-
     try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise HTTPError for bad requests
+
+        soup = BeautifulSoup(response.text, 'html.parser')
         researcher_bio_div = soup.select_one('div.researcher-bio')
 
         if researcher_bio_div:
@@ -69,7 +54,7 @@ def extract_staff_info(url):
         else:
             print(f"Researcher bio not found on {url}")
 
-    except Exception as e:
+    except requests.RequestException as e:
         print(f"Error: {e}")
         print(f"Error occurred on {url}")
 
@@ -83,17 +68,23 @@ def scrape_all_staff_info(base_url):
         url = base_url.format(page_number)
         print(f"Processing page {page_number}: {url}")
 
-        response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
+        try:
+            response = requests.get(url)
+            response.raise_for_status()  # Raise HTTPError for bad requests
 
-        staff_links = soup.find_all('a', href=lambda href: href and '/en/staff/professor/' in href)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            staff_links = soup.find_all('a', href=lambda href: href and '/en/staff/professor/' in href)
 
-        for staff_link in staff_links:
-            staff_url = f"https://www.psut.edu.jo{staff_link['href']}"
-            staff_info = extract_staff_info(staff_url)
+            for staff_link in staff_links:
+                staff_url = f"https://www.psut.edu.jo{staff_link['href']}"
+                staff_info = extract_staff_info(staff_url)
 
-            if staff_info:
-                staff_info_list.append(staff_info)
+                if staff_info:
+                    staff_info_list.append(staff_info)
+
+        except requests.RequestException as e:
+            print(f"Error: {e}")
+            print(f"Error occurred on {url}")
 
     columns = ['Name', 'Position', 'Telephone', 'Email', 'Individual Page']
     df = pd.DataFrame(staff_info_list, columns=columns)
