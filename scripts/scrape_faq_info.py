@@ -9,19 +9,6 @@ Original file is located at
 
 import os
 import requests
-import fitz  # PyMuPDF
-import json
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import chromedriver_autoinstaller
-import time
-import json
-
-import os
-import requests
 from bs4 import BeautifulSoup
 import json
 
@@ -63,6 +50,12 @@ urls_list = [
     "https://psut.edu.jo/en/faq/admission-2",
 ]
 
+# Specify an alternative writable directory (e.g., '/tmp/output_faq')
+output_directory = '/tmp/output_faq'
+
+# Create the output directory if it doesn't exist
+os.makedirs(output_directory, exist_ok=True)
+
 # Collect data for all URLs
 all_faq_data = []
 for i, url in enumerate(urls_list, 1):
@@ -70,14 +63,8 @@ for i, url in enumerate(urls_list, 1):
     if result_faq_data:
         all_faq_data.extend(result_faq_data)
 
-# Specify an alternative writable directory (e.g., '/tmp/output_faq')
-output_directory_faq = '/tmp/output_faq'
-
-# Create the output directory if it doesn't exist
-os.makedirs(output_directory_faq, exist_ok=True)
-
 # Save the extracted data to a JSON file in the specified directory
-json_file_path = os.path.join(output_directory_faq, 'faq_data.json')
+json_file_path = os.path.join(output_directory, 'faq_data.json')
 
 with open(json_file_path, 'w', encoding='utf-8') as json_file:
     json.dump(all_faq_data, json_file, ensure_ascii=False, indent=2)
