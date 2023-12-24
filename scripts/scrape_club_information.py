@@ -70,7 +70,7 @@ result_club_data = scrape_club_information(url)
 
 # Check if the result_club_data is not None before saving to a JSON file
 if result_club_data is not None:
-    output_directory = '/tmp/output'
+    output_directory = '/tmp/output_club'
 
     # Create the output directory if it doesn't exist
     os.makedirs(output_directory, exist_ok=True)
