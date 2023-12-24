@@ -9,21 +9,7 @@ Original file is located at
 
 import os
 import requests
-import fitz  # PyMuPDF
-import json
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import chromedriver_autoinstaller
-import time
-import json
-
-import os
-import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import json
 
 def scrape_club_information(url):
@@ -70,13 +56,11 @@ result_club_data = scrape_club_information(url)
 
 # Check if the result_club_data is not None before saving to a JSON file
 if result_club_data is not None:
-    output_directory = '/tmp/output_club'
-
-    # Create the output directory if it doesn't exist
-    os.makedirs(output_directory, exist_ok=True)
+    output_directory_club = '/tmp/output_club'
+    os.makedirs(output_directory_club, exist_ok=True)
 
     # Save the extracted data to a JSON file in the specified directory
-    json_file_path_club = os.path.join(output_directory, 'club_information.json')
+    json_file_path_club = os.path.join(output_directory_club, 'club_information.json')
     with open(json_file_path_club, 'w', encoding='utf-8') as json_file_club:
         json.dump(result_club_data, json_file_club, ensure_ascii=False, indent=2)
 
