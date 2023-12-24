@@ -1,6 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        // Define variables to store the hash of the extracted data for each stage
+        CLUB_DATA_HASH_FILE = 'club_data_hash.txt'
+        STUDENT_LIFE_DATA_HASH_FILE = 'student_life_data_hash.txt'
+        SCHOOL_DATA_HASH_FILE = 'school_data_hash.txt'
+        MASTER_PROGRAMS_DATA_HASH_FILE = 'master_programs_data_hash.txt'
+        FAQ_DATA_HASH_FILE = 'faq_data_hash.txt'
+        STAFF_DATA_HASH_FILE = 'staff_data_hash.txt'
+        ACADEMIC_CALENDAR_DATA_HASH_FILE = 'academic_calendar_data_hash.txt'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -12,7 +23,13 @@ pipeline {
         stage('Scrape Club Information') {
             steps {
                 script {
-                    sh 'scripts/scrape_club_information.py'
+                    echo 'Executing Python script for scraping club information...'
+                    try {
+                        sh 'python scripts/scrape_club_information.py'
+                        compareAndSaveHash('club_information.json', env.CLUB_DATA_HASH_FILE)
+                    } catch (Exception e) {
+                        handleError(e)
+                    }
                 }
             }
         }
@@ -20,7 +37,13 @@ pipeline {
         stage('Scrape Student Life Activities') {
             steps {
                 script {
-                    sh 'scripts/scrape_student_life_activities.py'
+                    echo 'Executing Python script for scraping student life activities...'
+                    try {
+                        sh 'python scripts/scrape_student_life_activities.py'
+                        compareAndSaveHash('student_life_activities.json', env.STUDENT_LIFE_DATA_HASH_FILE)
+                    } catch (Exception e) {
+                        handleError(e)
+                    }
                 }
             }
         }
@@ -28,7 +51,13 @@ pipeline {
         stage('Scrape School Information') {
             steps {
                 script {
-                    sh 'scripts/scrape_school_info.py'
+                    echo 'Executing Python script for scraping school information...'
+                    try {
+                        sh 'python scripts/scrape_school_info.py'
+                        compareAndSaveHash('all_combined_data.json', env.SCHOOL_DATA_HASH_FILE)
+                    } catch (Exception e) {
+                        handleError(e)
+                    }
                 }
             }
         }
@@ -36,7 +65,13 @@ pipeline {
         stage('Scrape Master Programs Information') {
             steps {
                 script {
-                    sh 'scripts/scrape_master_programs_info.py'
+                    echo 'Executing Python script for scraping master programs information...'
+                    try {
+                        sh 'python scripts/scrape_master_programs_info.py'
+                        compareAndSaveHash('master_programs_data.json', env.MASTER_PROGRAMS_DATA_HASH_FILE)
+                    } catch (Exception e) {
+                        handleError(e)
+                    }
                 }
             }
         }
@@ -44,7 +79,13 @@ pipeline {
         stage('Scrape FAQ Information') {
             steps {
                 script {
-                    sh 'scripts/scrape_faq_info.py'
+                    echo 'Executing Python script for scraping FAQ information...'
+                    try {
+                        sh 'python scripts/scrape_faq_info.py'
+                        compareAndSaveHash('faq_data.json', env.FAQ_DATA_HASH_FILE)
+                    } catch (Exception e) {
+                        handleError(e)
+                    }
                 }
             }
         }
@@ -52,7 +93,13 @@ pipeline {
         stage('Scrape Staff Information') {
             steps {
                 script {
-                    sh 'scripts/scrape_staff_info.py'
+                    echo 'Executing Python script for scraping staff information...'
+                    try {
+                        sh 'python scripts/scrape_staff_info.py'
+                        compareAndSaveHash('staff_info.json', env.STAFF_DATA_HASH_FILE)
+                    } catch (Exception e) {
+                        handleError(e)
+                    }
                 }
             }
         }
@@ -60,59 +107,43 @@ pipeline {
         stage('Extract Academic Calendar Data') {
             steps {
                 script {
-                    sh 'scripts/extract_academic_calendar_data.py'
-                }
-            }
-        }
-
-        stage('Check for Data Changes') {
-            steps {
-                script {
-                    // Implement logic to check if data has changed
-                    def previousDataPath = 'path/to/previous_data.json'
-                    def currentDataPath = 'path/to/current_data.json'
-
-                    if (fileExists(previousDataPath) && fileCompare(previousDataPath, currentDataPath)) {
-                        currentBuild.result = 'ABORTED'
-                        echo 'No changes detected. Aborting the build.'
+                    echo 'Executing Python script for extracting academic calendar data...'
+                    try {
+                        sh 'python scripts/extract_academic_calendar_data.py'
+                        compareAndSaveHash('extracted_data.json', env.ACADEMIC_CALENDAR_DATA_HASH_FILE)
+                    } catch (Exception e) {
+                        handleError(e)
                     }
                 }
             }
         }
 
-        stage('Create Vectorized Database') {
-            steps {
-                script {
-                    // Implement logic to create a vectorized database
-                    // This could be a separate script or set of commands
-                }
-            }
-        }
+        // Add more stages as needed
+    }
 
-        stage('Train Chatbot Model') {
-            steps {
-                script {
-                    // Implement logic to train your chatbot model
-                    // This could be a separate script or set of commands
-                }
-            }
+    post {
+        always {
+            // You can add cleanup or finalization steps here if needed
         }
     }
-}
 
-def fileExists(filePath) {
-    return fileExistsOrNot(filePath) == "EXISTS"
-}
+    // Function to compare hashes and save the current hash to the file
+    def compareAndSaveHash(dataFile, hashFile) {
+        def currentHash = sh(script: "md5sum ${dataFile} | awk '{print $1}'", returnStdout: true).trim()
+        def previousHash = readFile(hashFile).trim()
 
-def fileCompare(file1, file2) {
-    return file1.text == file2.text
-}
+        if (currentHash == previousHash) {
+            echo "Data has not changed. Skipping further processing."
+            currentBuild.result = 'SUCCESS'
+            return
+        }
 
-def fileExistsOrNot(filePath) {
-    def file = new File(filePath)
-    if (file.exists()) {
-        return "EXISTS"
-    } else {
-        return "NOT EXISTS"
+        writeFile file: hashFile, text: currentHash
+    }
+
+    // Function to handle errors and set the build result to FAILURE
+    def handleError(Exception e) {
+        echo "Error: ${e.message}"
+        currentBuild.result = 'FAILURE'
     }
 }
