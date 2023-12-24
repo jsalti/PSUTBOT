@@ -12,6 +12,38 @@ import json
 from bs4 import BeautifulSoup
 import os
 
+def scrape_departments(department_container):
+    departments = department_container.find_all("a", href=True)
+
+    department_data = []
+    for department in departments:
+        department_name = department.find("h4").text.strip()
+        department_link = department.get("href")
+
+        department_data.append({
+            "Department Name": department_name,
+            "Link": department_link
+        })
+
+    return department_data
+
+def scrape_programs(program_container):
+    programs = program_container.find_all("a", href=True)
+
+    program_data = []
+    for program in programs:
+        program_name = program.find("h4").text.strip()
+        program_description = program.find("p").text.strip()
+        program_link = program.get("href")
+
+        program_data.append({
+            "Program Name": program_name,
+            "Description": program_description,
+            "Link": program_link
+        })
+
+    return program_data
+
 def scrape_school_info(url):
     # Send a GET request to the URL
     response = requests.get(url)
@@ -25,35 +57,13 @@ def scrape_school_info(url):
         department_container = soup.find("div", class_="tab-pane fade", id="nav-profile")
 
         # Extract information about departments
-        departments = department_container.find_all("a", href=True)
-
-        department_data = []
-        for department in departments:
-            department_name = department.find("h4").text.strip()
-            department_link = department.get("href")
-
-            department_data.append({
-                "Department Name": department_name,
-                "Link": department_link
-            })
+        department_data = scrape_departments(department_container)
 
         # Find the container for the program information
         program_container = soup.find("div", class_="tab-pane fade show active")
 
         # Extract information about programs
-        programs = program_container.find_all("a", href=True)
-
-        program_data = []
-        for program in programs:
-            program_name = program.find("h4").text.strip()
-            program_description = program.find("p").text.strip()
-            program_link = program.get("href")
-
-            program_data.append({
-                "Program Name": program_name,
-                "Description": program_description,
-                "Link": program_link
-            })
+        program_data = scrape_programs(program_container)
 
         # Combine department and program data into a single dictionary
         combined_data = {
