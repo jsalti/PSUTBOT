@@ -59,12 +59,12 @@ if result_club_data is not None:
     output_directory_club = '/tmp/output_club'
     os.makedirs(output_directory_club, exist_ok=True)
 
-    # Save the extracted data to a JSON file in the specified directory
-    json_file_path_club = os.path.join(output_directory_club, 'club_information.json')
-    with open(json_file_path_club, 'w', encoding='utf-8') as json_file_club:
-        json.dump(result_club_data, json_file_club, ensure_ascii=False, indent=2)
-
-    # Print the path to the saved JSON file
-    print(f'Data saved to: {json_file_path_club}')
+    try:
+        json_file_path_club = os.path.join(output_directory_club, 'club_information.json')
+        with open(json_file_path_club, 'w', encoding='utf-8') as json_file_club:
+            json.dump(result_club_data, json_file_club, ensure_ascii=False, indent=2)
+        print(f'Data saved to: {json_file_path_club}')
+    except Exception as e:
+        print(f"Error saving club information to JSON: {e}")
 else:
     print("No data to save.")
