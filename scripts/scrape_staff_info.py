@@ -100,6 +100,7 @@ def scrape_all_staff_info(base_url):
     with open(json_file_path, 'w', encoding='utf-8') as json_file:
         json.dump(staff_info_list, json_file, ensure_ascii=False, indent=2)
 
+
     print(f'Data saved to: {json_file_path}')
 
     return df_no_duplicates
