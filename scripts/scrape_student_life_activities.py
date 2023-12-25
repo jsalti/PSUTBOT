@@ -51,8 +51,8 @@ def scrape_student_life_activities(url):
 
         # Create a dictionary from the lists
         data = {
-            "event_name": event_names,
-            "event_description": event_descriptions
+            "event_names": event_names,
+            "event_descriptions": event_descriptions
         }
 
         return data  # Return the data dictionary
