@@ -7,19 +7,8 @@ Original file is located at
     https://colab.research.google.com/drive/1fiQFqTopF8_FmxcU7lZbdHZIgAcZ1TgS
 """
 
-import os
-import requests
-import fitz  # PyMuPDF
-import json
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import chromedriver_autoinstaller
-import time
-import json
 
+import time
 import os
 import requests
 from bs4 import BeautifulSoup
