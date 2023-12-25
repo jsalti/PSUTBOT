@@ -85,7 +85,7 @@ if download_pdf(pdf_url, pdf_file_path):
     data = extract_pdf_text(pdf_file_path)
 
     # Save the extracted data to a JSON file in the specified directory
-    json_file_path = os.path.join(output_directory, 'extracted_data.json')
+    json_file_path = os.path.join(output_directory, 'academic_calandar.json')
     with open(json_file_path, 'w', encoding='utf-8') as json_file:
         json.dump(data, json_file, ensure_ascii=False, indent=2)
 
