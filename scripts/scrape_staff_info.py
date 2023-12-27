@@ -63,6 +63,7 @@ def extract_staff_info(url):
 def scrape_all_staff_info(base_url):
     total_pages = get_total_pages(base_url)
     staff_info_list = []
+    processed_urls = set()  # Keep track of processed URLs
 
     for page_number in range(total_pages, 0, -1):
         url = base_url.format(page_number)
@@ -77,10 +78,14 @@ def scrape_all_staff_info(base_url):
 
             for staff_link in staff_links:
                 staff_url = f"https://www.psut.edu.jo{staff_link['href']}"
-                staff_info = extract_staff_info(staff_url)
+                
+                # Check if the staff URL is already processed
+                if staff_url not in processed_urls:
+                    staff_info = extract_staff_info(staff_url)
 
-                if staff_info:
-                    staff_info_list.append(staff_info)
+                    if staff_info:
+                        staff_info_list.append(staff_info)
+                        processed_urls.add(staff_url)
 
         except requests.RequestException as e:
             print(f"Error: {e}")
@@ -88,7 +93,6 @@ def scrape_all_staff_info(base_url):
 
     columns = ['Name', 'Position', 'Telephone', 'Email', 'Individual Page']
     df = pd.DataFrame(staff_info_list, columns=columns)
-    df_no_duplicates = df.drop_duplicates()
 
     # Specify an alternative writable directory
     output_directory_staff = '/tmp/output_staff'
@@ -100,10 +104,9 @@ def scrape_all_staff_info(base_url):
     with open(json_file_path, 'w', encoding='utf-8') as json_file:
         json.dump(staff_info_list, json_file, ensure_ascii=False, indent=2)
 
-
     print(f'Data saved to: {json_file_path}')
 
-    return df_no_duplicates
+    return df
 
 # URL pattern for the staff pages
 base_url = "https://www.psut.edu.jo/en/staff/professor?page={}"
