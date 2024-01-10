@@ -163,6 +163,67 @@ pipeline {
         }
     }
 }
+        stage('Insert School Information into MongoDB') {
+            steps {
+                script {
+                    echo 'Inserting school information into MongoDB...'
+                    try {
+                        sh 'python database/insert_school_info_to_mongodb.py'
+                    } catch (Exception e) {
+                        handleError(e, 'Insert School Information into MongoDB')
+            }
+        }
+    }
+}
+        stage('Insert Master Programs Information into MongoDB') {
+            steps {
+                script {
+                    echo 'Inserting master programs information into MongoDB...'
+                    try {
+                        sh 'python database/insert_master_programs_to_mongodb.py'
+                    } catch (Exception e) {
+                        handleError(e, 'Insert Master Programs Information into MongoDB')
+            }
+        }
+    }
+}
+        stage('Insert FAQ Information into MongoDB') {
+            steps {
+                script {
+                    echo 'Inserting FAQ information into MongoDB...'
+                    try {
+                        sh 'python database/insert_faq_to_mongodb.py'
+                    } catch (Exception e) {
+                        handleError(e, 'Insert FAQ Information into MongoDB')
+            }
+        }
+    }
+}
+        stage('Insert Staff Information into MongoDB') {
+            steps {
+                script {
+                    echo 'Inserting staff information into MongoDB...'
+                    try {
+                        sh 'python database/insert_staff_Info_to_mongodb.py'
+                    } catch (Exception e) {
+                        handleError(e, 'Insert Staff Information into MongoDB')
+            }
+        }
+    }
+}
+        stage('Insert Academic Calendar Data into MongoDB') {
+            steps {
+                script {
+                    echo 'Inserting academic calendar data into MongoDB...'
+                    try {
+                        sh 'python database/insert_academic_calender_to_mongodb.py'
+                    } catch (Exception e) {
+                        handleError(e, 'Insert Academic Calendar Data into MongoDB')
+            }
+        }
+    }
+}
+
 
         stage('Final Stage') {
             steps {
