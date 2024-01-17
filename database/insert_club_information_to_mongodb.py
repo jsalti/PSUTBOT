@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import json
+from scrape_club_information import scrape_club_information
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
 db = client['PSUTBOT']
 def insert_club_information_to_mongodb(data, db, collection_name):
