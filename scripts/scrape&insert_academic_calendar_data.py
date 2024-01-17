@@ -2,13 +2,13 @@ import os
 import requests
 import fitz  # PyMuPDF
 import json
-import time  # Import the time module
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import chromedriver_autoinstaller
+from pymongo import MongoClient
 
 def download_pdf(pdf_url, destination_path):
     try:
@@ -71,9 +71,6 @@ pdf_file_path = os.path.join(output_directory, 'academic_calendar.pdf')
 
 # Download the PDF
 if download_pdf(pdf_url, pdf_file_path):
-    # Introduce a delay before accessing the file
-    time.sleep(5)  # Adjust the sleep duration as needed
-
     # Extract text from the PDF
     text_data = extract_pdf_text(pdf_file_path)
 
@@ -91,6 +88,16 @@ if download_pdf(pdf_url, pdf_file_path):
 
         # Print the combined table
         print(f'Combined Table:\n{combined_table}\n{"-" * 50}')
+
+        # MongoDB Configuration
+        mongo_client = MongoClient("mongodb://localhost:27017/")
+        db = mongo_client["PSUTBOT"]
+        collection = db["academic_calendar"]
+
+        # Insert the combined data into MongoDB
+        document = {"academic_calendar_information": combined_table}
+        collection.insert_one(document)
+        print('Combined table inserted into MongoDB')
 
 # Close the WebDriver when done
 driver.quit()
