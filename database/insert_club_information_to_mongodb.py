@@ -3,7 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import json
-
+client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+db = client['PSUTBOT']
 def scrape_club_information(url):
     # Send a GET request to the URL
     response = requests.get(url)
