@@ -29,7 +29,7 @@ def insert_then_update_academic_calendar_data(json_file_path, collection_name):
     print(f'Matched Count: {result.matched_count}')
     print(f'Modified Count: {result.modified_count}')
     print('Combined table inserted or updated in MongoDB')
-json_file_path = '/tmp/output_academic_calendar/academic_calendar_text.json'
+json_file_path = '/tmp/output_academic_calendar/extracted_data.json'
 collection_name = 'Academic Calendar'
 insert_then_update_academic_calendar_data(json_file_path, collection_name)
 )
