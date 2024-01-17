@@ -1,4 +1,5 @@
 from pymongo import MongoClient, UpdateOne
+from scrape_faq_info import scrape_faq_info
 
 
 # Initialize MongoDB client
