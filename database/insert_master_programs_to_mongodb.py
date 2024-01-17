@@ -2,7 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-
+client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+db = client['PSUTBOT']
 def scrape_master_programs_info(url):
     response = requests.get(url)
     html_content = response.text
