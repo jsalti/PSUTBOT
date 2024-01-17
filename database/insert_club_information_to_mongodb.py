@@ -1,8 +1,8 @@
 from pymongo import MongoClient, UpdateOne
 
 # Initialize MongoDB client
-client = MongoClient('localhost', 27017)
-db = client['PSUTBOT_database_1']
+client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+db = client['PSUTBOT']
 
 def insert_club_information_to_mongodb(data, db, collection_name):
     # Create a collection
@@ -12,7 +12,7 @@ def insert_club_information_to_mongodb(data, db, collection_name):
     operations = [
         UpdateOne(
             {"Club Name": name},
-            {"$set": {"Description": description}},
+            {"$set": {"Club Description": description}},
             upsert=True
         )
         for name, description in zip(data["Club Name"], data["Description"])
@@ -29,7 +29,7 @@ result_club_data = scrape_club_information(url_club_information)
 
 # Check if the result_club_data is not None
 if result_club_data is not None:
-    collection_name_club = 'Club information'  # Update with your actual collection name
+    collection_name_club = 'Clubs Information'  # Update with your actual collection name
     insert_club_information_to_mongodb(result_club_data, db, collection_name_club)
 else:
     print("No data to insert.")
