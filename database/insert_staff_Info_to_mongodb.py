@@ -1,5 +1,5 @@
 from pymongo import MongoClient, UpdateOne
-from scrape_staff_info import scrape_staff_info
+from scrape_staff_info import scrape_all_staff_info
 
 # Initialize MongoDB client
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
