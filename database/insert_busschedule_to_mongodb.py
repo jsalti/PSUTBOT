@@ -42,7 +42,7 @@ def insert_csv_to_mongodb(csv_file_path, database_name, collection_name, mongo_u
                 {
                     "$set": row
                 },
-                upsert=True
+                upsert=False
             )
 
             # Add the update operation to the list
