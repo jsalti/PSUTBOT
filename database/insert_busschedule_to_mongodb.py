@@ -47,10 +47,16 @@ def insert_csv_to_mongodb(csv_file_path, database_name, collection_name, mongo_u
             # Add the update operation to the list
             update_operations.append(update_operation)
 
-    # Perform bulk write with upsert
-    collection.bulk_write(update_operations)
+    # Print debug information
+    print("Filter Query:", filter_query)
+    print("Update Operations:", update_operations)
 
-    print(f"CSV data from {csv_file_path} inserted or updated into MongoDB collection {collection_name} successfully.")
+    # Perform bulk write with upsert
+    try:
+        collection.bulk_write(update_operations)
+        print(f"CSV data from {csv_file_path} inserted or updated into MongoDB collection {collection_name} successfully.")
+    except Exception as e:
+        print(f"Error during bulk write: {e}")
 
 # Example usage
 csv_file_path = "/Users/jinnyy/Desktop/BusSchedule.csv"
