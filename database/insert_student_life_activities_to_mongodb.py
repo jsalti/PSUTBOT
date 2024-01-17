@@ -1,6 +1,6 @@
 from pymongo import MongoClient, UpdateOne
 from pymongo import MongoClient, UpdateOne
-from scrape_student_life_activities import scrape_student_life_activities
+from scrape_student_life_activities import scrape_student_life_activities(url)
 
 # Initialize MongoDB client
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
