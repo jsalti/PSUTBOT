@@ -119,7 +119,8 @@ pipeline {
                         // Ensure ChromeDriver is available for extract_academic_calendar_data.py
                         sh "${PYTHON_EXECUTABLE} scripts/extract_academic_calendar_data.py"
                         sleep time: 5, unit: 'SECONDS'
-                        compareAndSaveHash("${OUTPUT_DIRECTORY}/output_academic_calendar/extracted_data.json", ACADEMIC_CALENDAR_DATA_HASH_FILE)
+                        compareAndSaveHash("${OUTPUT_DIRECTORY}/output_academic_calendar/academic_calendar_text.json", ACADEMIC_CALENDAR_DATA_HASH_FILE)
+
                     } catch (Exception e) {
                         handleError(e, 'Extract Academic Calendar Data')
                     }
