@@ -30,7 +30,7 @@ def insert_csv_to_mongodb(csv_file_path, database_name, collection_name):
                     {
                         "$set": row
                     },
-                    upsert=True
+                    upsert=Flase 
                 )
 
                 # Add the update operation to the list
