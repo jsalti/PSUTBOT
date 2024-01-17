@@ -4,59 +4,6 @@ import json
 import os
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
 db = client['PSUTBOT']
-def scrape_master_programs_info(url):
-    response = requests.get(url)
-    html_content = response.text
-
-    # Parse the HTML content using BeautifulSoup
-    soup_master_programs = BeautifulSoup(html_content, "html.parser")
-
-    # Find the container for the program information
-    program_container = soup_master_programs.find("div", class_="tab-pane fade show active")
-
-    # Extract information about programs
-    programs = program_container.find_all("a", href=True)
-
-    program_data = []
-    for program in programs:
-        program_name_tag = program.find("h4")
-        program_description_tag = program.find("p")
-
-        if program_name_tag and program_description_tag:
-            program_name = program_name_tag.text.strip()
-            program_description = program_description_tag.text.strip()
-            program_data.append({
-                " master_Program_Name": program_name,
-                "master_Program_Description": program_description,
-        
-            })
-
-    return program_data
-
-# Example URL
-url_master_programs = "https://psut.edu.jo/en/school/School_of_Graduate_Studies_Scientific_Research"
-
-# Call the function to scrape master's programs information
-master_programs_data = scrape_master_programs_info(url_master_programs)
-
-# Specify the directory where you have write permissions
-output_directory = '/tmp/output_school'
-
-# Ensure the directory exists
-os.makedirs(output_directory, exist_ok=True)
-
-# Specify the output JSON file path
-output_json_file = os.path.join(output_directory, 'master_programs_data.json')
-
-# Save the extracted data to a JSON file
-with open(output_json_file, 'w', encoding='utf-8') as json_file:
-    json.dump(master_programs_data, json_file, ensure_ascii=False, indent=2)
-
-print(f'Data saved to: {output_json_file}')
-
-
-db = client['PSUTBOT']
-
 def insert_master_programs_to_mongodb(data, db, collection_name):
     """
     Inserts master's programs information into MongoDB.
