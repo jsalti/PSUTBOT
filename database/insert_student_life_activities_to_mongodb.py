@@ -11,8 +11,8 @@ def insert_student_life_activities_to_mongodb(data, db, collection_name):
     # Convert the dictionary to a list of UpdateOne operations
     operations = [
         UpdateOne(
-            {"event_name": name},
-            {"$set": {"event_description": description}},
+            {"Event Name": name},
+            {"$set": {"Event Description": description}},
             upsert=True
         )
         for name, description in zip(data["event_name"], data["event_description"])
@@ -29,7 +29,7 @@ result_event_data = scrape_student_life_activities(url_student_life_activities)
 
 # Check if the result_event_data is not None
 if result_event_data is not None:
-    collection_name_events = 'student_life_activities'  # Update with your actual collection name
+    collection_name_events = 'Events'  # Update with your actual collection name
     insert_student_life_activities_to_mongodb(result_event_data, db, collection_name_events)
 else:
     print("No data to insert.")
