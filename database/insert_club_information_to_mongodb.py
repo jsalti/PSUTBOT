@@ -1,5 +1,4 @@
 from pymongo import MongoClient, UpdateOne
-from scripts.scrape_club_information import scrape_club_information
 
 
 # Initialize MongoDB client
