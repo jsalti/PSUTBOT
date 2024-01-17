@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-from scrape_master_programs import scrape_master_programs_from_url
+from scrape_master_programs import scrape_master_programs_from_url(url)
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
 db = client['PSUTBOT']
 def insert_master_programs_to_mongodb(data, db, collection_name):
