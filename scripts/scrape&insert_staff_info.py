@@ -1,8 +1,6 @@
-import os
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import json
 
 def get_total_pages(base_url):
     url = base_url.format(1)
@@ -98,6 +96,12 @@ base_url = "https://www.psut.edu.jo/en/staff/professor?page={}"
 
 # Scrape all staff information and get DataFrame without duplicates
 result_staff_info = scrape_all_staff_info(base_url)
+
+# Insert data into MongoDB
+client = MongoClient('mongodb://localhost:27017/')
+db = client['PSUTBOT']
+collection = db['staff_info']
+collection.insert_many(result_staff_info.to_dict(orient='records'))
 
 # Display the result
 print(result_staff_info)
