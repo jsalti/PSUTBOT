@@ -4,36 +4,94 @@ from pymongo import MongoClient, UpdateOne
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
 db = client['PSUTBOT']
 
-def insert_school_info_to_mongodb(data, db, collection_name):
-    """
-    Inserts school information into MongoDB.
+import requests
+from bs4 import BeautifulSoup
+from pymongo import MongoClient, UpdateOne
 
-    Parameters:
-        data (dict): School information data dictionary.
-        db: MongoDB database object.
-        collection_name (str): Name of the collection to insert data into.
-    """
-    # Create a collection
+def scrape_departments(department_container):
+    departments = department_container.find_all("a", href=True)
 
-    collection_school_info = db['school information']
+    department_data = []
+    for department in departments:
+        department_name = department.find("h4").text.strip()
+        department_data.append({
+            "Department Name": department_name
+        })
 
-    # Insert JSON data into MongoDB
-    collection_school_info.insert_one(data)
+    return department_data
 
-    print("Data inserted successfully!")
+def scrape_bachelors_programs(program_container):
+    programs = program_container.find_all("a", href=True)
 
-# Example usage
+    program_data = []
+    for program in programs:
+        program_name = program.find("h4").text.strip()
+        program_description = program.find("p").text.strip()
+        program_data.append({
+            "Bachelors Program Name": program_name,
+            "Bachelors Program Description": program_description,
+        })
 
-collection_name_school = 'school_information'  # Update with your actual collection name
+    return program_data
 
-# Load the JSON data from the file
-with open(json_file_path_all_data, 'r', encoding='utf-8') as file:
-    all_data = json.load(file)
+def scrape_school_info(url):
+    response = requests.get(url)
 
-# Iterate over each URL's data and insert into MongoDB
-for url, data_for_url in all_data.items():
-    print(f"Inserting data for URL: {url}")
-    # Call the function to insert data into MongoDB
-    insert_school_info_to_mongodb(data_for_url, db, collection_name_school)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.content, "html.parser")
+        department_container = soup.find("div", class_="tab-pane fade show active")
+        program_container = soup.find("div", class_="tab-pane fade show active")
 
-print("All data inserted successfully into MongoDB!")
+        department_data = scrape_departments(department_container)
+        program_data = scrape_bachelors_programs(program_container)
+
+        return department_data, program_data
+
+    else:
+        print(f"Failed to retrieve the page for URL: {url}")
+        return None, None
+
+departments_collection = db['Departments']
+bachelors_programs_collection = db['Bachelors Programs']  # Updated collection name
+
+# Example URLs
+urls_list = [
+    "https://psut.edu.jo/en/school/School_of_Engineering",
+    "https://psut.edu.jo/en/school/King_business_technology",
+    "https://psut.edu.jo/en/school/school_of_computing_sciences#nav-home"
+]
+
+# Separate data for all URLs
+all_department_data = []
+all_bachelors_program_data = []
+
+for url in urls_list:
+    department_data, bachelors_program_data = scrape_school_info(url)
+    
+    if department_data:
+        all_department_data.extend(department_data)
+        
+        # Update or insert data into MongoDB using UpdateOne with upsert
+        for data in department_data:
+            filter_condition = {"Department Name": data["Department Name"]}
+            update_operation = UpdateOne(
+                filter_condition,
+                {"$set": data},
+                upsert=True
+            )
+            departments_collection.bulk_write([update_operation])
+    
+    if bachelors_program_data:
+        all_bachelors_program_data.extend(bachelors_program_data)
+        
+        # Update or insert data into MongoDB using UpdateOne with upsert
+        for data in bachelors_program_data:
+            filter_condition = {"Bachelors Program Name": data["Bachelors Program Name"]}
+            update_operation = UpdateOne(
+                filter_condition,
+                {"$set": data},
+                upsert=True
+            )
+            bachelors_programs_collection.bulk_write([update_operation])
+
+print("Data saved to MongoDB.")
