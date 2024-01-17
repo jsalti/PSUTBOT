@@ -2,6 +2,7 @@ import os
 import requests
 import fitz  # PyMuPDF
 import json
+import time  # Import the time module
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -70,6 +71,9 @@ pdf_file_path = os.path.join(output_directory, 'academic_calendar.pdf')
 
 # Download the PDF
 if download_pdf(pdf_url, pdf_file_path):
+    # Introduce a delay before accessing the file
+    time.sleep(5)  # Adjust the sleep duration as needed
+
     # Extract text from the PDF
     text_data = extract_pdf_text(pdf_file_path)
 
