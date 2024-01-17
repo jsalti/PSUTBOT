@@ -5,7 +5,6 @@ client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?r
 db = client['PSUTBOT']
 
 import csv
-from pymongo import MongoClient
 
 def read_office_hours_csv(csv_file_path):
     # Open the CSV file
@@ -40,16 +39,20 @@ def read_office_hours_csv(csv_file_path):
 
 def insert_into_mongodb(doctor_hours):
     # Connect to MongoDB
+    collection = db["Office_Hours"]
 
-    collection = db["office_hours"]
+    # Create a list of UpdateOne operations for bulk write
+    update_operations = [
+        UpdateOne(
+            {"doctor_name": doctor_name},
+            {"$addToSet": {"office_hours": {"$each": hours_list}}},
+            upsert=True
+        )
+        for doctor_name, hours_list in doctor_hours.items()
+    ]
 
-    # Insert data into MongoDB
-    for doctor_name, hours_list in doctor_hours.items():
-        data = {
-            "doctor_name": doctor_name,
-            "office_hours": hours_list
-        }
-        collection.insert_one(data)
+    # Perform bulk write with upsert
+    collection.bulk_write(update_operations)
 
 # Example usage:
 csv_file_path = "/Users/jinnyy/Desktop/Office hours.csv"
@@ -59,5 +62,5 @@ doctor_hours = read_office_hours_csv(csv_file_path)
 for doctor_name, hours_list in doctor_hours.items():
     print(f"{doctor_name}: {', '.join(hours_list)}")
 
-# Insert data into MongoDB
+# Insert data into MongoDB using UpdateOne
 insert_into_mongodb(doctor_hours)
