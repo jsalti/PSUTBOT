@@ -33,7 +33,7 @@ def insert_csv_to_mongodb(csv_file_path, database_name, collection_name, mongo_u
         reader = csv.DictReader(file)
         for row in reader:
             # Define the filter for the update using the 'Route Name' column
-            filter_query = {"Route Name": row["Route Name"]}
+            filter_query = {"Route": row["Route"]}
 
             # Define the update operation
             update_operation = UpdateOne(
@@ -59,4 +59,4 @@ mongo_uri = 'mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrite
 
 routes_data = csv_to_dict(csv_file_path)
 save_to_json(routes_data, json_file_path)
-insert_csv_to_mongodb(csv_file_path, 'PSUTBOT', 'bus_schedules', mongo_uri)
+insert_csv_to_mongodb(csv_file_path, 'PSUTBOT', 'Bus Schedule', mongo_uri)
