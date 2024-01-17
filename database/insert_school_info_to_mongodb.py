@@ -49,7 +49,7 @@ def scrape_school_info(url):
 
     else:
         print(f"Failed to retrieve the page for URL: {url}")
-        return None, None
+        return None
 
 departments_collection = db['Departments']
 bachelors_programs_collection = db['Bachelors Programs']  # Updated collection name
@@ -77,7 +77,7 @@ for url in urls_list:
             update_operation = UpdateOne(
                 filter_condition,
                 {"$set": data},
-                upsert=True
+                upsert=False
             )
             departments_collection.bulk_write([update_operation])
     
@@ -90,7 +90,7 @@ for url in urls_list:
             update_operation = UpdateOne(
                 filter_condition,
                 {"$set": data},
-                upsert=True
+                upsert=False
             )
             bachelors_programs_collection.bulk_write([update_operation])
 
