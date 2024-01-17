@@ -58,7 +58,7 @@ with open(json_file_path, 'w', encoding='utf-8') as json_file:
 print(f'Data saved to: {json_file_path}')
 
 # Insert FAQ data into MongoDB using the function
-collection_name_faq = 'faq_information'  # Update with your actual collection name
+collection_name_faq = 'FAQ'  # Update with your actual collection name
 
 # Call the function to insert or update data into MongoDB
 insert_faq_to_mongodb(all_faq_data, db, collection_name_faq)
