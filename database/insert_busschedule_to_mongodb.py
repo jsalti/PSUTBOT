@@ -1,7 +1,8 @@
 import csv
 import json
 from pymongo import MongoClient, UpdateOne
-
+client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+db = client['PSUTBOT']
 def csv_to_dict(csv_file):
     routes_dict = {}
     with open(csv_file, 'r') as file:
