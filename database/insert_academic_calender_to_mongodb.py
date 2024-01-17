@@ -1,4 +1,5 @@
 from pymongo import MongoClient, UpdateOne
+from scripts.extract_academic_calendar_data import extract_academic_calendar_data
 
 # Initialize MongoDB client
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
