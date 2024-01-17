@@ -1,4 +1,6 @@
 from pymongo import MongoClient, UpdateOne
+from scripts.scrape_club_information import scrape_club_information
+
 
 # Initialize MongoDB client
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
