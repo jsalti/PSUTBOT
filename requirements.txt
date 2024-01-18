@@ -1,0 +1,16 @@
+langchain.schema 
+langchain.memory 
+os
+dotenv 
+datetime 
+langchain.llms 
+langchain.embeddings 
+langchain.vectorstores 
+langchain.chains 
+langchain.prompts 
+langchain.text_splitter 
+pymongo 
+langchain.schema 
+langchain.memory 
+flask 
+flask_cors 
