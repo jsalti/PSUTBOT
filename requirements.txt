@@ -9,8 +9,15 @@ langchain.vectorstores
 langchain.chains 
 langchain.prompts 
 langchain.text_splitter 
-pymongo 
 langchain.schema 
 langchain.memory 
 flask 
 flask_cors 
+csv
+json
+selenium
+fitz
+requests
+chromedriver_autoinstaller
+BeautifulSoup
+MongoClient
