@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import os
+import sys
 from pymongo import MongoClient
 
 def scrape_departments(department_container):
@@ -56,32 +58,50 @@ def scrape_school_info(url):
         print(f"Failed to retrieve the page for URL: {url}")
         return None, None
 
-# Connect to MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['PSUTBOT']  # Replace 'your_database_name' with your actual database name
-departments_collection = db['departments']
-programs_collection = db['programs']
+def save_to_mongodb(data, collection, db):
+    # Insert data into MongoDB
+    collection.insert_many(data)
+    print(f"Data inserted successfully into {collection.name} collection.")
 
-# Example URLs
-urls_list = [
-    "https://psut.edu.jo/en/school/School_of_Engineering",
-    "https://psut.edu.jo/en/school/King_business_technology",
-    "https://psut.edu.jo/en/school/school_of_computing_sciences#nav-home"
-]
+if __name__ == "__main__":
+    action = sys.argv[1]
 
-# Separate data for all URLs
-all_department_data = []
-all_program_data = []
+    # Connect to MongoDB
+    client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+    db = client['PSUTBOT']  # Replace 'your_database_name' with your actual database name
 
-for url in urls_list:
-    department_data, program_data = scrape_school_info(url)
-    
-    if department_data:
-        all_department_data.extend(department_data)
-        departments_collection.insert_many(department_data)
-    
-    if program_data:
-        all_program_data.extend(program_data)
-        programs_collection.insert_many(program_data)
+    # Create collections
+    departments_collection = db['Departments']
+    programs_collection = db['Programs']
 
-print("Data saved to MongoDB.")
+    # Example URLs
+    urls_list = [
+        "https://psut.edu.jo/en/school/School_of_Engineering",
+        "https://psut.edu.jo/en/school/King_business_technology",
+        "https://psut.edu.jo/en/school/school_of_computing_sciences#nav-home"
+    ]
+
+    # Separate data for all URLs
+    all_department_data = []
+    all_program_data = []
+
+    if action == "--scrape-and-insert":
+        for url in urls_list:
+            department_data, program_data = scrape_school_info(url)
+
+            if department_data:
+                all_department_data.extend(department_data)
+                save_to_mongodb(department_data, departments_collection, db)
+
+            if program_data:
+                all_program_data.extend(program_data)
+                save_to_mongodb(program_data, programs_collection, db)
+
+        print("Data saved to MongoDB.")
+
+    elif action == "--get-code-before":
+        # Implement code extraction here if needed
+        pass
+
+    else:
+        print("Invalid action. Use --scrape-and-insert or --get-code-before.")
