@@ -1,8 +1,9 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
 import json
+from pymongo import MongoClient
+import sys
 
 def scrape_club_information(url):
     # Send a GET request to the URL
@@ -40,38 +41,6 @@ def scrape_club_information(url):
         print("Failed to retrieve the page.")
         return None
 
-# URL of the page you want to scrape
-url = "https://psut.edu.jo/en/student-life-clubs"
-
-# Call the function with the URL
-result_club_data = scrape_club_information(url)
-
-# Check if the result_club_data is not None before saving to a JSON file
-if result_club_data is not None:
-    output_directory = '/tmp/output'
-
-    # Create the output directory if it doesn't exist
-    os.makedirs(output_directory, exist_ok=True)
-
-    # Save the extracted data to a JSON file in the specified directory
-    json_file_path_club = os.path.join(output_directory, 'club_information.json')
-    with open(json_file_path_club, 'w', encoding='utf-8') as json_file_club:
-        json.dump(result_club_data, json_file_club, ensure_ascii=False, indent=2)
-
-    # Print the path to the saved JSON file
-    print(f'Data saved to: {json_file_path_club}')
-else:
-    print("No data to save.")
-result_club_data = scrape_club_information(url)
-
-# Check if the result_club_data is not None
-if result_club_data is not None:
-    # Print the data
-    print(result_club_data)
-else:
-    print("No data to save.")
-
-
 def insert_club_information_to_mongodb(data, db, collection_name):
     """
     Inserts club information into MongoDB.
@@ -92,12 +61,20 @@ def insert_club_information_to_mongodb(data, db, collection_name):
 
     print("Data inserted successfully!")
 
-url = "https://psut.edu.jo/en/student-life-clubs"
-result_club_data = scrape_club_information(url)
+if __name__ == "__main__":
+    action = sys.argv[1]
 
-# Check if the result_club_data is not None
-if result_club_data is not None:
-    collection_name_club = 'Club information'  
-    insert_club_information_to_mongodb(result_club_data, db, collection_name_club)
-else:
-    print("No data to insert.")
+    if action == "--get-code-before":
+        # Implement code extraction here if needed
+        pass
+    elif action == "--scrape-club-data":
+        url = "https://psut.edu.jo/en/student-life-clubs"
+        result_club_data = scrape_club_information(url)
+        print(json.dumps(result_club_data))
+    elif action == "--insert-into-mongodb":
+        data = json.loads(os.environ['SCRAPE_RESULT'])
+        db_name = os.environ['DB_NAME']
+        client = MongoClient()
+        db = client[db_name]
+        collection_name_club = 'Club information'
+        insert_club_information_to_mongodb(data, db, collection_name_club)
