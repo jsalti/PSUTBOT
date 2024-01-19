@@ -2,6 +2,8 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import json
+from pymongo import MongoClient
+import sys
 
 def scrape_faq_info(url):
     # Send a GET request to the URL
@@ -23,7 +25,7 @@ def scrape_faq_info(url):
             answer = '\n'.join([p.text.strip() for p in item.find('div', class_='card-body').find_all('p')])
 
             faq_data.append({
-                " FAQ_Question": question,
+                "FAQ_Question": question,
                 "FAQ_Answer": answer
             })
 
@@ -33,46 +35,16 @@ def scrape_faq_info(url):
         print("FAQ container not found. Please check the page structure.")
         return None
 
-# URLs of the pages you want to scrape
-urls_list = [
-    "https://psut.edu.jo/en/faq/faq-category2",
-    "https://psut.edu.jo/en/faq/scientific-research",
-    "https://psut.edu.jo/en/faq/graduate-studies",
-    "https://psut.edu.jo/en/faq/admission-2",
-]
+def save_to_json(data, output_directory, filename):
+    # Save the extracted data to a JSON file in the specified directory
+    json_file_path = os.path.join(output_directory, filename)
+    with open(json_file_path, 'w', encoding='utf-8') as json_file:
+        json.dump(data, json_file, ensure_ascii=False, indent=2)
 
-# Collect data for all URLs
-all_faq_data = []
-for i, url in enumerate(urls_list, 1):
-    result_faq_data = scrape_faq_info(url)
-    if result_faq_data:
-        all_faq_data.extend(result_faq_data)
-
-# Specify an alternative writable directory (e.g., '/tmp/output_faq')
-output_directory_faq = '/tmp/output_faq'
-
-# Create the output directory if it doesn't exist
-os.makedirs(output_directory_faq, exist_ok=True)
-
-# Save the extracted data to a JSON file in the specified directory
-json_file_path = os.path.join(output_directory_faq, 'faq_data.json')
-
-with open(json_file_path, 'w', encoding='utf-8') as json_file:
-    json.dump(all_faq_data, json_file, ensure_ascii=False, indent=2)
-
-# Print the path to the saved JSON file
-print(f'Data saved to: {json_file_path}')
-
+    # Print the path to the saved JSON file
+    print(f'Data saved to: {json_file_path}')
 
 def insert_faq_to_mongodb(data, db, collection_name):
-    """
-    Inserts FAQ data into MongoDB.
-
-    Parameters:
-        data (list): List of dictionaries containing FAQ data.
-        db: MongoDB database object.
-        collection_name (str): Name of the collection to insert data into.
-    """
     # Create a collection
     collection_faq = db[collection_name]
 
@@ -81,44 +53,42 @@ def insert_faq_to_mongodb(data, db, collection_name):
 
     print("FAQ data inserted successfully!")
 
-# URLs of the pages you want to scrape
-urls_list = [
-    "https://psut.edu.jo/en/faq/faq-category2",
-    "https://psut.edu.jo/en/faq/scientific-research",
-    "https://psut.edu.jo/en/faq/graduate-studies",
-    "https://psut.edu.jo/en/faq/admission-2",
-]
+if __name__ == "__main__":
+    action = sys.argv[1]
 
-# Collect data for all URLs
-all_faq_data = []
-for i, url in enumerate(urls_list, 1):
-    result_faq_data = scrape_faq_info(url)
-    if result_faq_data:
-        all_faq_data.extend(result_faq_data)
+    # URLs of the pages you want to scrape
+    urls_list = [
+        "https://psut.edu.jo/en/faq/faq-category2",
+        "https://psut.edu.jo/en/faq/scientific-research",
+        "https://psut.edu.jo/en/faq/graduate-studies",
+        "https://psut.edu.jo/en/faq/admission-2",
+    ]
 
-# Specify an alternative writable directory (e.g., '/tmp/output_faq')
-output_directory_faq = '/tmp/output_faq'
+    # Specify an alternative writable directory (e.g., '/tmp/output_faq')
+    output_directory_faq = '/tmp/output_faq'
 
-# Create the output directory if it doesn't exist
-os.makedirs(output_directory_faq, exist_ok=True)
+    # MongoDB Configuration
+    mongo_client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+    db = mongo_client['PSUTBOT']
 
-# Save the extracted data to a JSON file in the specified directory
-json_file_path = os.path.join(output_directory_faq, 'faq_data.json')
+    if action == "--scrape-faq":
+        # Collect data for all URLs
+        all_faq_data = []
+        for i, url in enumerate(urls_list, 1):
+            result_faq_data = scrape_faq_info(url)
+            if result_faq_data:
+                all_faq_data.extend(result_faq_data)
 
-with open(json_file_path, 'w', encoding='utf-8') as json_file:
-    json.dump(all_faq_data, json_file, ensure_ascii=False, indent=2)
+        # Save data to a JSON file
+        save_to_json(all_faq_data, output_directory_faq, 'faq_data.json')
 
-# Print the path to the saved JSON file
-print(f'Data saved to: {json_file_path}')
+        # Insert FAQ data into MongoDB
+        collection_name_faq = 'FAQ'
+        insert_faq_to_mongodb(all_faq_data, db, collection_name_faq)
 
-# Insert FAQ data into MongoDB using the function
-collection_name_faq = 'faq_information'  # Update with your actual collection name
+    elif action == "--get-code-before":
+        # Implement code extraction here if needed
+        pass
 
-# Load the JSON data from the file as a list
-with open(json_file_path, 'r', encoding='utf-8') as file:
-    faq_data_list = json.load(file)
-
-# Call the function to insert data into MongoDB
-insert_faq_to_mongodb(faq_data_list, db, collection_name_faq)
-
-print("FAQ data inserted successfully into MongoDB!")
+    else:
+        print("Invalid action. Use --scrape-faq or --get-code-before.")
