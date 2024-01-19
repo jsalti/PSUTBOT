@@ -1,8 +1,9 @@
-
 import os
 import requests
 from bs4 import BeautifulSoup
 import json
+import sys
+from pymongo import MongoClient
 
 def scrape_student_life_activities(url):
     # Send a GET request to the URL
@@ -30,8 +31,8 @@ def scrape_student_life_activities(url):
 
         # Create a dictionary from the lists
         data = {
-            "event_name": event_names,
-            "event_description": event_descriptions
+            "Event Name": event_names,
+            "Event Description": event_descriptions
         }
 
         return data  # Return the data dictionary
@@ -39,29 +40,6 @@ def scrape_student_life_activities(url):
     else:
         print("Failed to retrieve the page.")
         return None
-
-# URL of the page you want to scrape
-url_student_life_activities = "https://psut.edu.jo/en/student-life-activities"
-
-result_event_data = scrape_student_life_activities(url_student_life_activities)
-
-# Check if the result_event_data is not None before saving to a JSON file
-if result_event_data is not None:
-    output_directory_event = '/tmp/output_event'
-
-    # Create the output directory if it doesn't exist
-    os.makedirs(output_directory_event, exist_ok=True)
-
-    # Save the extracted data to a JSON file in the specified directory
-    json_file_path_event = os.path.join(output_directory_event, 'student_life_activities.json')
-    with open(json_file_path_event, 'w', encoding='utf-8') as json_file_event:
-        json.dump(result_event_data, json_file_event, ensure_ascii=False, indent=2)
-
-    # Print the path to the saved JSON file
-    print(f'Data saved to: {json_file_path_event}')
-else:
-    print("No data to save.")
-
 
 def insert_student_life_activities_to_mongodb(data, db, collection_name):
     """
@@ -73,23 +51,52 @@ def insert_student_life_activities_to_mongodb(data, db, collection_name):
         collection_name (str): Name of the collection to insert data into.
     """
     # Create a collection
-    collection_event = db['Events']
+    collection_event = db[collection_name]
 
     # Convert the dictionary to a list of documents
-    documents = [{"event_name": name, "event_description": description} for name, description in zip(data["event_name"], data["event_description"])]
+    documents = [{"Event Name": name, "Event Description": description} for name, description in zip(data["Event Name"], data["Event Description"])]
 
     # Insert JSON data into MongoDB
     collection_event.insert_many(documents)
 
     print("Data inserted successfully!")
 
-# Example usage
-url_student_life_activities = "https://psut.edu.jo/en/student-life-activities"
-result_event_data = scrape_student_life_activities(url_student_life_activities)
+if __name__ == "__main__":
+    action = sys.argv[1]
 
-# Check if the result_event_data is not None
-if result_event_data is not None:
-    collection_name_events = 'student_life_activities'  # Update with your actual collection name
-    insert_student_life_activities_to_mongodb(result_event_data, db, collection_name_events)
-else:
-    print("No data to insert.")
+    # Connect to MongoDB
+    client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+    db = client['PSUTBOT']  # Replace 'your_database_name' with your actual database name
+
+    # URL of the page you want to scrape
+    url_student_life_activities = "https://psut.edu.jo/en/student-life-activities"
+    result_event_data = scrape_student_life_activities(url_student_life_activities)
+
+    if action == "--scrape-and-insert":
+        # Check if the result_event_data is not None before saving to a JSON file
+        if result_event_data is not None:
+            # Specify an alternative writable directory
+            output_directory_event = '/tmp/output_event'
+            os.makedirs(output_directory_event, exist_ok=True)
+
+            # Save the extracted data to a JSON file in the specified directory
+            json_file_path_event = os.path.join(output_directory_event, 'student_life_activities.json')
+            with open(json_file_path_event, 'w', encoding='utf-8') as json_file_event:
+                json.dump(result_event_data, json_file_event, ensure_ascii=False, indent=2)
+
+            # Print the path to the saved JSON file
+            print(f'Data saved to: {json_file_path_event}')
+
+        else:
+            print("No data to save.")
+
+        # Example usage
+        collection_name_events = 'Events'  # Update with your actual collection name
+        insert_student_life_activities_to_mongodb(result_event_data, db, collection_name_events)
+
+    elif action == "--get-code-before":
+        # Implement code extraction here if needed
+        pass
+
+    else:
+        print("Invalid action. Use --scrape-and-insert or --get-code-before.")
