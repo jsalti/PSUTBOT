@@ -41,25 +41,35 @@ def scrape_club_information(url):
         print("Failed to retrieve the page.")
         return None
 
-def insert_club_information_to_mongodb(data, db, collection_name):
+def insert_club_information_to_mongodb(data, db_uri, db_name, collection_name):
     """
-    Inserts club information into MongoDB.
+    Inserts or updates club information in MongoDB.
 
     Parameters:
         data (dict): Club information data dictionary.
-        db: MongoDB database object.
+        db_uri (str): MongoDB URI.
+        db_name (str): Name of the MongoDB database.
         collection_name (str): Name of the collection to insert data into.
     """
-    # Create a collection
+    # Connect to MongoDB using the provided URI
+    client = MongoClient(db_uri)
+
+    # Select the specified database
+    db = client[db_name]
+
+    # Create a collection (it will be created if it doesn't exist)
     collection = db[collection_name]
 
     # Convert the dictionary to a list of documents
-    documents = [{"Club_Name": name, "club_Description": description} for name, description in zip(data["Club Name"], data["club_Description"])]
+    documents = [{"_id": name, "Club Name": name, "Club Description": description} for name, description in zip(data["Club Name"], data["Club Description"])]
 
-    # Insert JSON data into MongoDB
-    collection.insert_many(documents)
+    # Update existing documents or insert new ones based on '_id' field
+    for document in documents:
+        filter_criteria = {"_id": document["_id"]}
+        update_data = {"$set": document}
+        collection.update_many(filter_criteria, update_data, upsert=True)
 
-    print("Data inserted successfully!")
+    print("Data inserted or updated successfully!")
 
 if __name__ == "__main__":
     action = sys.argv[1]
@@ -73,8 +83,7 @@ if __name__ == "__main__":
         print(json.dumps(result_club_data))
     elif action == "--insert-into-mongodb":
         data = json.loads(os.environ['SCRAPE_RESULT'])
-        db_name = os.environ['DB_NAME']
-        client = MongoClient()
-        db = client[db_name]
-        collection_name_club = 'Club information'
-        insert_club_information_to_mongodb(data, db, collection_name_club)
+        db_uri = "mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/PSUTBOT?retryWrites=true&w=majority"
+        db_name = "PSUTBOT"
+        collection_name_club = 'Club Information'
+        insert_club_information_to_mongodb(data, db_uri, db_name, collection_name_club)
