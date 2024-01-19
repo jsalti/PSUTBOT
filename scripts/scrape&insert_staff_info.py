@@ -1,6 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import json
+import os
+import sys
+from pymongo import MongoClient
 
 def get_total_pages(base_url):
     url = base_url.format(1)
@@ -91,17 +95,44 @@ def scrape_all_staff_info(base_url):
 
     return df
 
-# URL pattern for the staff pages
-base_url = "https://www.psut.edu.jo/en/staff/professor?page={}"
+def insert_staff_info_to_mongodb(data, db, collection_name):
+    """
+    Inserts staff information into MongoDB.
 
-# Scrape all staff information and get DataFrame without duplicates
-result_staff_info = scrape_all_staff_info(base_url)
+    Parameters:
+        data (list): List of dictionaries containing staff information.
+        db: MongoDB database object.
+        collection_name (str): Name of the collection to insert data into.
+    """
+    # Create a collection
+    collection_staff = db[collection_name]
 
-# Insert data into MongoDB
-client = MongoClient('mongodb://localhost:27017/')
-db = client['PSUTBOT']
-collection = db['staff_info']
-collection.insert_many(result_staff_info.to_dict(orient='records'))
+    # Insert JSON data into MongoDB
+    collection_staff.insert_many(data)
 
-# Display the result
-print(result_staff_info)
+    print("Staff information inserted successfully into MongoDB!")
+
+if __name__ == "__main__":
+    action = sys.argv[1]
+
+    # Connect to MongoDB
+    client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+    db = client['PSUTBOT']  # Replace 'your_database_name' with your actual database name
+
+    # Example URL pattern for the staff pages
+    base_url = "https://www.psut.edu.jo/en/staff/professor?page={}"
+
+    # Scrape all staff information and get DataFrame without duplicates
+    result_staff_info = scrape_all_staff_info(base_url)
+
+    if action == "--scrape-and-insert":
+        # Insert data into MongoDB
+        collection_name_staff = 'staff_info'  # Update with your actual collection name
+        insert_staff_info_to_mongodb(result_staff_info.to_dict(orient='records'), db, collection_name_staff)
+
+    elif action == "--get-code-before":
+        # Implement code extraction here if needed
+        pass
+
+    else:
+        print("Invalid action. Use --scrape-and-insert or --get-code-before.")
