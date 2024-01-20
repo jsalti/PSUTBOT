@@ -89,31 +89,31 @@ This section outlines the process of extracting data from the official website o
 
   
 ### Post-Processing and Model Preparation
-After inserting the data into MongoDB, further processing is performed to prepare the data for our GPT-3.5 model. This involves text splitting and generating embeddings.
+After inserting the data into MongoDB, further processing is performed to prepare the data for our GPT-3.5 turbo model. This involves text splitting and generating embeddings.
 
 ### Steps Involved
 
 1. **Text Splitting**:
    - We use the `langchain.text_splitter.RecursiveCharacterTextSplitter` from the Langchain library to split the data into manageable chunks.
-   - This is necessary to ensure the data fits within the text limits of the GPT-3.5 model and to facilitate more efficient processing.
+   - This is necessary to ensure the data fits within the text limits of the GPT-3.5 turbo model and to facilitate more efficient processing.
 
 2. **Generating Embeddings**:
    - With the data now in smaller chunks, we proceed to generate embeddings.
    - For this, we use OpenAI's API, utilizing an API key provided by OpenAI.which can be obtained from [OpenAI](https://openai.com/).
-   - The embeddings are created to transform the text data into a format that is more suitable for machine learning models, specifically the GPT-3.5 model.
+   - The embeddings are created to transform the text data into a format that is more suitable for machine learning models, specifically the GPT-3.5 turbo model.
 
 3. **Storing Processed Data**:
    - After generating the embeddings, this processed data is stored in a vector store called Chroma, provided by `langchain.vectorstores`.
    - To implement this, we use the `Chroma` class from the `langchain.vectorstores` package.
-   - The data, now with generated embeddings, is stored in Chroma, making it efficiently accessible for retrieval and use by our GPT-3.5 model.
+   - The data, now with generated embeddings, is stored in Chroma, making it efficiently accessible for retrieval and use by our GPT-3.5 turbo model.
 
 4. **Data Integration with GPT-3.5**:
-   - The embeddings stored in Chroma are integrated with the GPT-3.5 model.
+   - The embeddings stored in Chroma are integrated with the GPT-3.5 turbo model.
    - This integration enables the model to leverage the processed data for various NLP tasks, enhancing its performance and accuracy.
 
 ### Important Notes
 
-- Ensure all steps are followed in sequence for optimal data preparation and integration with the GPT-3.5 model.
+- Ensure all steps are followed in sequence for optimal data preparation and integration with the GPT-3.5 turbo model.
 - Handle the data and embeddings with care to maintain integrity and context.
 
 ### Tools and Libraries Used
@@ -122,7 +122,7 @@ After inserting the data into MongoDB, further processing is performed to prepar
 - Text splitting library .
 - OpenAI API for generating embeddings.
 - Chroma from `langchain.vectorstores` for storing processed embeddings.
-- GPT-3.5 model for advanced natural language processing tasks.
+- GPT-3.5 turbo model for advanced natural language processing tasks.
 
 ### Chatbot Response Generation using GPT-3.5 Turbo
 
