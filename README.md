@@ -1,10 +1,21 @@
 <p align="center">
   <img src="https://github.com/jsalti/PSUTBOT/assets/104867354/3cc7d7cb-a734-4ac1-9100-bdd97d746f2a" alt="bot_logo" width="400" height="auto">
-  <br>
-  <strong style="font-size: xx-large;">PSUTBOT</strong>
 </p>
 
-
+# Table of Contents
+1. [Description](#description)
+2. [Data Loading and Processing](#data-loading-and-processing)
+   - [Steps Involved](#steps-involved)
+3. [Post-Processing and Model Preparation](#post-processing-and-model-preparation)
+   - [Text Splitting](#text-splitting)
+   - [Generating Embeddings](#generating-embeddings)
+   - [Storing Processed Data](#storing-processed-data)
+   - [Data Integration with GPT-3.5](#data-integration-with-gpt-35)
+4. [Chatbot Response Generation using GPT-3.5 Turbo](#chatbot-response-generation-using-gpt-35-turbo)
+   - [Prompt Templates in LangChain](#prompt-templates-in-langchain)
+   - [Conversational Retrieval Chain](#conversational-retrieval-chain)
+5. [Conclusion](#conclusion)
+# PSUTBOT: The PSUT Chatbot
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 PSUTBOT is a university chatbot that would improve student support services by giving immediate, correct answers to their questions. Creating a 
