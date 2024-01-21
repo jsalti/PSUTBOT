@@ -35,6 +35,8 @@ def extract_pdf_text(pdf_path):
         return None
 
 def scrape_academic_calendar(url, output_directory):
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
     # Set up the WebDriver with Chrome options
     chrome_options = Options()
     chrome_options.add_argument('--lang=en')
