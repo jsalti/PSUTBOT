@@ -34,7 +34,7 @@ def insert_csv_to_mongodb(csv_file_path, database_name, collection_name, mongo_u
         reader = csv.DictReader(file)
         for row in reader:
             # Define the filter for the update using the 'Route Name' column
-            filter_query = {"Route": row["Route"]}
+            filter_query = {"Route": row["Route "]}
 
             # Define the update operation
             update_operation = UpdateOne(
