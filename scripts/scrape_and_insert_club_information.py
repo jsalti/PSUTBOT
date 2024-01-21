@@ -37,7 +37,7 @@ def scrape_club_information(url):
         # Create a dictionary from the lists
         data = {
             "Club Name": club_names,
-            "club_Description": club_descriptions
+            "Club Description": club_descriptions
         }
 
         return data  # Return the data dictionary
