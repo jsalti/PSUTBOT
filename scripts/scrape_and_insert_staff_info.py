@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     if action == "--scrape-and-insert":
         # Insert data into MongoDB
-        collection_name_staff = 'staff_info'  # Update with your actual collection name
+        collection_name_staff = 'Staff_Info'  # Update with your actual collection name
         insert_staff_info_to_mongodb(result_staff_info.to_dict(orient='records'), db, collection_name_staff)
 
     elif action == "--get-code-before":
