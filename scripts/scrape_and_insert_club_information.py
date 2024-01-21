@@ -5,6 +5,11 @@ import json
 from pymongo import MongoClient
 import sys
 
+
+for key, value in os.environ.items():
+    print(f'{key}: {value}')
+
+
 def scrape_club_information(url):
     # Send a GET request to the URL
     response = requests.get(url)
