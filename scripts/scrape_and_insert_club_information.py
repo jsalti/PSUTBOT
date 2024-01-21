@@ -84,3 +84,5 @@ if __name__ == "__main__":
         db_name = "PSUTBOT"
         collection_name_club = 'Club Information'
         insert_club_information_to_mongodb(data, db_uri, db_name, collection_name_club)
+
+
