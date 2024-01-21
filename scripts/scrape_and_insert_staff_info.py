@@ -96,14 +96,7 @@ def scrape_all_staff_info(base_url):
     return df
 
 def insert_staff_info_to_mongodb(data, db, collection_name):
-    """
-    Inserts staff information into MongoDB.
 
-    Parameters:
-        data (list): List of dictionaries containing staff information.
-        db: MongoDB database object.
-        collection_name (str): Name of the collection to insert data into.
-    """
     # Create a collection
     collection_staff = db[collection_name]
 
