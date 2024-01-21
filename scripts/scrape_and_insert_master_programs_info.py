@@ -2,8 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os
-import sys
 from pymongo import MongoClient
+import sys
 
 def scrape_master_programs_info(url):
     response = requests.get(url)
@@ -51,6 +51,10 @@ def insert_master_programs_to_mongodb(data, db, collection_name):
 
     print("Data inserted successfully!")
 
+def extract_code_before():
+    # Add your code extraction logic here
+    print("Code extraction logic goes here.")
+
 if __name__ == "__main__":
     action = sys.argv[1]
 
@@ -88,9 +92,7 @@ if __name__ == "__main__":
 
     elif action == "--get-code-before":
         # Implement code extraction here if needed
-        pass
+        extract_code_before()
 
     else:
         print("Invalid action. Use --scrape-master-programs or --get-code-before.")
-
-
