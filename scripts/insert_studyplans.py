@@ -45,5 +45,5 @@ def insert_csv_to_mongodb(csv_file_path, database_name, collection_name):
         print(f"An error occurred: {e}")
 
 # Example usage
-csv_file_path = '/Users/jinnyy/Desktop/study_plans_links.csv'
+csv_file_path = '/Users/jinnyy/Desktop/studyplans_links.csv'
 insert_csv_to_mongodb(csv_file_path, 'PSUTBOT', 'Study Plans')
