@@ -42,14 +42,7 @@ def scrape_student_life_activities(url):
         return None
 
 def insert_student_life_activities_to_mongodb(data, db, collection_name):
-    """
-    Inserts student life activities information into MongoDB.
 
-    Parameters:
-        data (dict): Student life activities information data dictionary.
-        db: MongoDB database object.
-        collection_name (str): Name of the collection to insert data into.
-    """
     # Create a collection
     collection_event = db[collection_name]
 
