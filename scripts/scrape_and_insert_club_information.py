@@ -47,15 +47,7 @@ def scrape_club_information(url):
         return None
 
 def insert_club_information_to_mongodb(data, db_uri, db_name, collection_name):
-    """
-    Inserts or updates club information in MongoDB.
 
-    Parameters:
-        data (dict): Club information data dictionary.
-        db_uri (str): MongoDB URI.
-        db_name (str): Name of the MongoDB database.
-        collection_name (str): Name of the collection to insert data into.
-    """
     # Connect to MongoDB using the provided URI
     client = MongoClient(db_uri)
 
