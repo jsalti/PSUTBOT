@@ -96,14 +96,20 @@ def scrape_all_staff_info(base_url):
     return df
 
 def insert_staff_info_to_mongodb(data, db, collection_name):
-
     # Create a collection
-    collection_staff = db[collection_name]
+    collection_staff = db["Staff Info"]
 
-    # Insert JSON data into MongoDB
-    collection_staff.insert_many(data)
+    # Update existing documents or insert new ones if they don't exist
+    for document in data:
+        filter_query = {"_id": document["_id"]}  
+        update_operation = {
+            "$set": document
+        }
 
-    print("Staff information inserted successfully into MongoDB!")
+        collection_staff.update_many(filter_query, update_operation, upsert=True)
+
+    print("Staff information inserted or updated successfully in MongoDB!")
+
 
 if __name__ == "__main__":
     action = sys.argv[1]
@@ -120,7 +126,7 @@ if __name__ == "__main__":
 
     if action == "--scrape-and-insert":
         # Insert data into MongoDB
-        collection_name_staff = 'Staff_Info'  # Update with your actual collection name
+        collection_name_staff = 'Staff Info'  # Update with your actual collection name
         insert_staff_info_to_mongodb(result_staff_info.to_dict(orient='records'), db, collection_name_staff)
 
     elif action == "--get-code-before":
