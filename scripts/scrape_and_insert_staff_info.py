@@ -96,19 +96,21 @@ def scrape_all_staff_info(base_url):
     return df
 
 def insert_staff_info_to_mongodb(data, db, collection_name):
+
     # Create a collection
-    collection_staff = db["Staff Info"]
+    collection_staff = db[collection_name]
 
-    # Update existing documents or insert new ones if they don't exist
-    for document in data:
-        filter_query = {"_id": document["_id"]}  
-        update_operation = {
-            "$set": document
-        }
+    # Convert DataFrame to list of dictionaries
+    data_list = data.to_dict(orient='records')
 
-        collection_staff.update_many(filter_query, update_operation, upsert=True)
+    for document in data_list:
+        # Use the 'Name' field as a unique identifier
+        filter_query = {"Name": document["Name"]}
+        update_data = {"$set": document}
+        # Use 'upsert=True' to insert the document if it doesn't exist
+        collection_staff.update_many(filter_query, update_data, upsert=True)
 
-    print("Staff information inserted or updated successfully in MongoDB!")
+    print("Staff information inserted successfully into MongoDB!")
 
 
 if __name__ == "__main__":
