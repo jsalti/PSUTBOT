@@ -42,17 +42,22 @@ def scrape_student_life_activities(url):
         return None
 
 def insert_student_life_activities_to_mongodb(data, db, collection_name):
-
     # Create a collection
     collection_event = db[collection_name]
 
     # Convert the dictionary to a list of documents
     documents = [{"Event Name": name, "Event Description": description} for name, description in zip(data["Event Name"], data["Event Description"])]
 
-    # Insert JSON data into MongoDB
-    collection_event.insert_many(documents)
+    # Update existing documents or insert new ones if they don't exist
+    for document in documents:
+        filter_query = {"Event Name": document["Event Name"]}  # Assuming "Event Name" is unique
+        update_operation = {
+            "$set": document
+        }
 
-    print("Data inserted successfully!")
+        collection_event.update_many(filter_query, update_operation, upsert=True)
+
+    print("Data inserted or updated successfully!")
 
 if __name__ == "__main__":
     action = sys.argv[1]
@@ -93,3 +98,4 @@ if __name__ == "__main__":
 
     else:
         print("Invalid action. Use --scrape-and-insert or --get-code-before.")
+
