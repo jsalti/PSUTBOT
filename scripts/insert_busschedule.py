@@ -23,9 +23,7 @@ def save_to_json(data, json_file):
 
 def insert_csv_to_mongodb(csv_file_path, database_name, collection_name, mongo_uri):
     # Connect to MongoDB
-    client = MongoClient(mongo_uri)
-    db = client[database_name]
-    collection = db[collection_name]
+    collection = db["Bus Schedule"]
 
     # Open CSV file and prepare a list of UpdateOne operations
     update_operations = []
