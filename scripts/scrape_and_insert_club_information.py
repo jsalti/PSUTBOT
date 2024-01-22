@@ -41,15 +41,9 @@ def scrape_club_information(url):
         print("Failed to retrieve the page.")
         return None
 
-def insert_club_information_to_mongodb(data, db_uri, db_name, collection_name):
+def insert_club_information_to_mongodb(data, db, collection_name):
 
-    # Connect to MongoDB using the provided URI
-    client = MongoClient(db_uri)
-
-    # Select the specified database
-    db = client[db_name]
-
-    # Create a collection (it will be created if it doesn't exist)
+    # Create a collection
     collection = db[collection_name]
 
     # Convert the dictionary to a list of documents
@@ -63,19 +57,31 @@ def insert_club_information_to_mongodb(data, db_uri, db_name, collection_name):
 
     print("Data inserted or updated successfully!")
 
+def extract_code_before_club():
+    # Add your code extraction logic here for club information
+    print("Code extraction logic for club information goes here.")
+
 if __name__ == "__main__":
     action = sys.argv[1]
 
-    if action == "--get-code-before":
-        # Implement code extraction here if needed
-        pass
-    elif action == "--scrape-club-data":
-        url = "https://psut.edu.jo/en/student-life-clubs"
+    url = "https://psut.edu.jo/en/student-life-clubs"
+
+    # MongoDB Configuration
+    mongo_client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+    db = mongo_client['PSUTBOT']
+    collection_name_club = 'Club Information'
+
+    if action == "--scrape-club-data":
         result_club_data = scrape_club_information(url)
         print(json.dumps(result_club_data))
+
     elif action == "--insert-into-mongodb":
         data = json.loads(os.environ['SCRAPE_RESULT'])
-        db_uri = "mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/PSUTBOT?retryWrites=true&w=majority"
-        db_name = "PSUTBOT"
-        collection_name_club = 'Club Information'
-        insert_club_information_to_mongodb(data, db_uri, db_name, collection_name_club)
+        insert_club_information_to_mongodb(data, db, collection_name_club)
+
+    elif action == "--get-code-before":
+        # Implement code extraction logic for club information if needed
+        extract_code_before_club()
+
+    else:
+        print("Invalid action. Use --scrape-club-data, --insert-into-mongodb, or --get-code-before.")
