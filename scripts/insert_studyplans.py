@@ -7,9 +7,8 @@ mongo_uri = 'mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrite
 def insert_csv_to_mongodb(csv_file_path, database_name, collection_name):
     try:
         # Connect to MongoDB
-        client = MongoClient(mongo_uri)
-        db = client[database_name]
-        collection = db[collection_name]
+
+        collection = db["Study Plans"]
 
         # Check if the collection exists, if not, MongoDB will create it on the fly
         if collection_name not in db.list_collection_names():
