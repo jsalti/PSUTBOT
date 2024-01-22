@@ -44,7 +44,7 @@ def scrape_club_information(url):
 def insert_club_information_to_mongodb(data, db, collection_name):
 
     # Create a collection
-    collection = db[collection_name]
+    collection = db["Club Information"]
 
     # Convert the dictionary to a list of documents
     documents = [{"_id": name, "Club Name": name, "Club Description": description} for name, description in zip(data["Club Name"], data["Club Description"])]
