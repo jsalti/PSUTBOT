@@ -4,45 +4,60 @@ import csv
 # Define MongoDB URI
 client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
 db = client['PSUTBOT']
-def insert_csv_to_mongodb(csv_file_path, database_name, collection_name):
-    try:
-        # Connect to MongoDB
 
-        collection = db["Study Plans"]
+def read_study_plans_csv(csv_file_path):
+    # Open the CSV file
+    with open(csv_file_path, 'r') as csvfile:
+        # Read the CSV file
+        reader = csv.DictReader(csvfile)
 
-        # Check if the collection exists, if not, MongoDB will create it on the fly
-        if collection_name not in db.list_collection_names():
-            print(f"Collection {collection_name} does not exist. It will be created.")
+        # Initialize the dictionary
+        study_plans_data = {}
 
-        # Open CSV file and prepare a list of UpdateOne operations
-        update_operations = []
+        # Iterate over the rows in the CSV file
+        for row in reader:
+            # Extract the major name
+            major_name = row["Major"]
 
-        with open(csv_file_path, 'r') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                # Define the filter for the update using the 'study_plans_links' column
-                filter_query = {"studyplans_links": row["Major"]}
+            # If the major is not already in the dictionary, add it with an empty list as its value
+            if major_name not in study_plans_data:
+                study_plans_data[major_name] = []
 
-                # Define the update operation
-                update_operation = UpdateOne(
-                    filter_query,
-                    {
-                        "$set": row
-                    },
-                    upsert=False 
-                )
+            # Extract the link to the study plan
+            study_plan_link = row["link to study plan"]
 
-                # Add the update operation to the list
-                update_operations.append(update_operation)
+            # Add the link to the list for the current major
+            study_plans_data[major_name].append({
+                "study_plan_link": study_plan_link
+            })
 
-        # Perform bulk write with upsert
-        result = collection.bulk_write(update_operations)
+    return study_plans_data
 
-        print(f"CSV data from {csv_file_path} inserted or updated into MongoDB collection {collection_name} successfully. {result.modified_count} documents modified.")
-    
-    except Exception as e:
-        print(f"An error occurred: {e}")
+def insert_study_plans_into_mongodb(study_plans_data):
+    # Connect to MongoDB
+    collection = db["Study_Plans"]
 
-# Example usage
+    # Create a list of UpdateOne operations for bulk write
+    update_operations = [
+        UpdateOne(
+            {"major_name": major_name},
+            {"$addToSet": {"study_plans": {"$each": major_data["study_plan_link"]}}},
+            upsert=True
+        )
+        for major_name, major_list in study_plans_data.items() for major_data in major_list
+    ]
+
+    # Perform bulk write with upsert
+    collection.bulk_write(update_operations)
+
+# Example usage:
 csv_file_path = '/Users/jinnyy/Desktop/studyplans_links.csv'
-insert_csv_to_mongodb(csv_file_path, 'PSUTBOT', 'Study Plans')
+study_plans_data = read_study_plans_csv(csv_file_path)
+
+# Print the study_plans_data dictionary
+for major_name, major_list in study_plans_data.items():
+    for major_data in major_list:
+        print(f"{major_name}: {major_data}")
+
+# Insert data into MongoDB using UpdateOne
+insert_study_plans_into_mongodb(study_plans_data)
