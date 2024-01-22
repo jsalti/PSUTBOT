@@ -58,10 +58,17 @@ def scrape_school_info(url):
         print(f"Failed to retrieve the page for URL: {url}")
         return None, None
 
-def save_to_mongodb(data, collection, db):
-    # Insert data into MongoDB
-    collection.insert_many(data)
-    print(f"Data inserted successfully into {collection.name} collection.")
+def save_to_mongodb(data, collection, db, unique_field):
+    # Update existing documents or insert new ones if they don't exist
+    for document in data:
+        filter_query = {unique_field: document[unique_field]}
+        update_operation = {
+            "$set": document
+        }
+
+        collection.update_many(filter_query, update_operation, upsert=True)
+
+    print(f"Data inserted or updated successfully into {collection.name} collection.")
 
 if __name__ == "__main__":
     action = sys.argv[1]
@@ -91,11 +98,11 @@ if __name__ == "__main__":
 
             if department_data:
                 all_department_data.extend(department_data)
-                save_to_mongodb(department_data, departments_collection, db)
+                save_to_mongodb(department_data, departments_collection, db, "Department Name")
 
             if program_data:
                 all_program_data.extend(program_data)
-                save_to_mongodb(program_data, programs_collection, db)
+                save_to_mongodb(program_data, programs_collection, db, "Program_Name")
 
         print("Data saved to MongoDB.")
 
