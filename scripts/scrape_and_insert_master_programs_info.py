@@ -46,10 +46,16 @@ def insert_master_programs_to_mongodb(data, db, collection_name):
     # Create a collection
     collection_master_programs = db[collection_name]
 
-    # Insert JSON data into MongoDB
-    collection_master_programs.insert_many(data)
+    # Update existing documents or insert new ones if they don't exist
+    for document in data:
+        filter_query = {"master_Program_Name": document["master_Program_Name"]}  # Assuming "master_Program_Name" is unique
+        update_operation = {
+            "$set": document
+        }
 
-    print("Data inserted successfully!")
+        collection_master_programs.update_many(filter_query, update_operation, upsert=True)
+
+    print("Data inserted or updated successfully in MongoDB!")
 
 def extract_code_before():
     # Add your code extraction logic here
