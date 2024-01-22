@@ -2,8 +2,8 @@ from pymongo import MongoClient, UpdateOne
 import csv
 
 # Define MongoDB URI
-mongo_uri = 'mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority'
-
+client = MongoClient('mongodb+srv://jana:jr12345@cluster0.2hzth74.mongodb.net/?retryWrites=true&w=majority')
+db = client['PSUTBOT']
 def insert_csv_to_mongodb(csv_file_path, database_name, collection_name):
     try:
         # Connect to MongoDB
@@ -21,7 +21,7 @@ def insert_csv_to_mongodb(csv_file_path, database_name, collection_name):
             reader = csv.DictReader(file)
             for row in reader:
                 # Define the filter for the update using the 'study_plans_links' column
-                filter_query = {"studyplans_links": row["Major "]}
+                filter_query = {"studyplans_links": row["Major"]}
 
                 # Define the update operation
                 update_operation = UpdateOne(
