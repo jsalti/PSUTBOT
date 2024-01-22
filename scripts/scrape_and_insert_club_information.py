@@ -42,9 +42,8 @@ def scrape_club_information(url):
         return None
 
 def insert_club_information_to_mongodb(data, db, collection_name):
-
     # Create a collection
-    collection = db["Club Information"]
+    collection = db[collection_name]
 
     # Convert the dictionary to a list of documents
     documents = [{"_id": name, "Club Name": name, "Club Description": description} for name, description in zip(data["Club Name"], data["Club Description"])]
@@ -56,10 +55,6 @@ def insert_club_information_to_mongodb(data, db, collection_name):
         collection.update_many(filter_criteria, update_data, upsert=True)
 
     print("Data inserted or updated successfully!")
-
-def extract_code_before_club():
-    # Add your code extraction logic here for club information
-    print("Code extraction logic for club information goes here.")
 
 if __name__ == "__main__":
     action = sys.argv[1]
@@ -76,7 +71,8 @@ if __name__ == "__main__":
         print(json.dumps(result_club_data))
 
     elif action == "--insert-into-mongodb":
-        data = json.loads(os.environ['SCRAPE_RESULT'])
+        # Load data from environment variable
+        data = json.loads(os.environ.get('SCRAPE_RESULT', '{}'))
         insert_club_information_to_mongodb(data, db, collection_name_club)
 
     elif action == "--get-code-before":
