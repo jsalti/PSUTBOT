@@ -46,13 +46,16 @@ def insert_club_information_to_mongodb(data, db, collection_name):
     collection = db[collection_name]
 
     # Convert the dictionary to a list of documents
-    documents = [{"_id": name, "Club Name": name, "Club Description": description} for name, description in zip(data["Club Name"], data["Club Description"])]
+    documents = [{"Club Name": name, "Club Description": description} for name, description in zip(data["Club Name"], data["Club Description"])]
 
     # Update existing documents or insert new ones based on '_id' field
     for document in documents:
-        filter_criteria = {"_id": document["_id"]}
-        update_data = {"$set": document}
-        collection.update_many(filter_criteria, update_data, upsert=True)
+        filter_query = {"Club Name": document["Club Name"]}
+        update_operation = {
+            "$set": document
+        }
+
+        collection.update_many(filter_query, update_operation, upsert=True)
 
     print("Data inserted or updated successfully!")
 
