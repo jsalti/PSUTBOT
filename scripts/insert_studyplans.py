@@ -17,7 +17,7 @@ def read_study_plans_csv(csv_file_path):
         # Iterate over the rows in the CSV file
         for row in reader:
             # Extract the major name
-            major_name = row["Major "]
+            major_name = row["Major"]
 
             # If the major is not already in the dictionary, add it with an empty list as its value
             if major_name not in study_plans_data:
